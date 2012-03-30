@@ -53,9 +53,11 @@ sub jsify {
     if ($val->isa('JE::Object') || $val->typeof eq 'object') {
         my @str;
         foreach my $key (keys %$val) {
-            push @str, $key.': '.(jsify($val->{$key}));
+            my $str = $key.': '.(jsify($val->{$key}));
+            $str =~ s/\n/\n    /g;
+            push @str, $str;
         }
-        return '{ '.join(', ', @str).' }';
+        return "{\n    ".join(",\n    ", @str)."\n}";
     }
 
     # other
