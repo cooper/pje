@@ -5,6 +5,7 @@ use strict;
 use 5.010;
 
 our %dir;
+my  %used;
 $| = 1;
 BEGIN {
     my $dir = shift @ARGV or die "Run directory not specified.\n";
@@ -27,6 +28,7 @@ while (1) {
     my $next   = <STDIN>;
     my $result = $j->eval($next);
     say defined $result ? jsify($result) : 'undefined';
+    %used = ();
 }
 
 sub jsify {
@@ -36,7 +38,15 @@ sub jsify {
     # array
     if ($val->isa('JE::Object::Array') || ($val->isa('JE::Object') && $val->is_array)
         || ($val->can('class') && $val->class eq 'Array')) {
-          return '[ '.join(', ', map { jsify($_) } @$val).' ]';
+        return '(used)' if ref $val && $used{$val->id};
+        my @str;
+        foreach my $elem (@$val) {
+            my $str = jsify($elem);
+            $str =~ s/\n/\n    /g;
+            push @str, $str;
+        }
+        $used{$val->id} = 1 if ref $val;
+        return "[\n    ".join(",\n    ", @str)."\n]";
     }
 
     # string
@@ -51,12 +61,14 @@ sub jsify {
 
     # Object
     if ($val->isa('JE::Object') || $val->typeof eq 'object') {
+        return '(used)' if ref $val && $used{$val->id};
         my @str;
         foreach my $key (keys %$val) {
             my $str = $key.': '.(jsify($val->{$key}));
             $str =~ s/\n/\n    /g;
             push @str, $str;
         }
+        $used{$val->id} = 1 if ref $val;
         return "{\n    ".join(",\n    ", @str)."\n}";
     }
 
