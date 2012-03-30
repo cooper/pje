@@ -3,9 +3,16 @@
 use warnings;
 use strict;
 
-our $dir;
+our %dir;
 BEGIN {
-    chdir($dir = shift @ARGV or die "Run directory not specified.\n")
-    or die "Unable to switch working directory.\n";
-    unshift @INC, $dir;
+    my $dir = shift @ARGV or die "Run directory not specified.\n";
+    $dir =~ s/\/bin$//;
+    %dir = (
+        bin   => "$dir/bin",
+        lib   => "$dir/lib/pje",
+        share => "$dir/share/pje"
+    );
+    unshift @INC, $dir{lib};
 }
+
+use JE;
