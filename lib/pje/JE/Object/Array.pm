@@ -413,7 +413,7 @@ sub _new_constructor {
             function_args => ['this'],
             function      => sub {
                 my $self = shift;
-                JE::Object::Array->new($global, keys @{$$self->{array}});
+                JE::Object::Array->new($global, CORE::keys @{$$self->{array}});
             },
             no_proto => 1
         }),
@@ -682,7 +682,7 @@ sub _sort {
 
 sub _each {
     my ($self, $func) = @_;
-    foreach my $index (keys @{$$self->{array}}) {
+    foreach my $index (CORE::keys @{$$self->{array}}) {
         $func->apply($self, $$self->{array}[$index], $index);
     }
     $self;
