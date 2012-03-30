@@ -1,0 +1,12 @@
+#!/bin/bash
+
+DIR=`dirname "$(cd "${0%/*}" 2>/dev/null; echo "$PWD"/"${0##*/}")"`
+ARGS=$@
+
+case "${ARGS[0]}" in
+    '')
+        perl $DIR/pje-shell.pl $DIR
+        ;;
+    *)
+        perl $DIR/pje-interpreter.pl $DIR ${ARGS[0]}
+esac
