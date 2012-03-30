@@ -17,6 +17,7 @@ BEGIN {
     unshift @INC, $dir{lib};
 }
 
+use Scalar::Util 'blessed';
 use JE;
 
 my $j = JE->new;
@@ -29,5 +30,34 @@ while (1) {
 }
 
 sub jsify {
-    my $what = shift;
+    defined(my $val = shift) or return;
+    return $val unless blessed($val);
+
+    # array
+    if ($val->isa('JE::Object::Array') || ($val->isa('JE::Object') && $val->is_array)
+        || ($val->can('class') && $val->class eq 'Array')) {
+          return '[ '.join(', ', map { jsify($_) } @$val).' ]';
+    }
+
+    # string
+    if ($val->isa('JE::String') || $val->typeof eq 'string') {
+        return '"' . $val . '"';
+    }
+
+    # Error
+    if ($val->isa('JE::Object::Error')) {
+        return $val->name.': '.$val->{message};
+    }
+
+    # Object
+    if ($val->isa('JE::Object') || $val->typeof eq 'object') {
+        my @str;
+        foreach my $key (keys %$val) {
+            push @str, $key.': '.(jsify($val->{$key}));
+        }
+        return '{ '.join(', ', @str).' }';
+    }
+
+    # other
+    $val
 }
