@@ -5,7 +5,7 @@ use strict;
 use 5.010;
 
 our %dir;
-my  %used;
+my %used;
 $| = 1;
 BEGIN {
     my $dir = shift @ARGV or die "Run directory not specified.\n";
@@ -24,10 +24,15 @@ use JE;
 my $j = JE->new;
 
 while (1) {
+    my $res;
     print '> ';
     my $next   = <STDIN>;
-    my $result = $j->eval($next);
-    say defined $result ? jsify($result) : 'undefined';
+    my $result = defined($res = $j->eval($next)) ? $res : $@;
+    say defined $result ? do {
+        $result = jsify($result);
+        $result =~ s/\n$//;
+        $result;
+    } : 'undefined';
     %used = ();
 }
 
@@ -35,10 +40,15 @@ sub jsify {
     defined(my $val = shift) or return;
     return $val unless blessed($val);
 
+    # Error
+    if ($val->isa('JE::Object::Error') || $val->class =~ m/Error/) {
+        return $val->name.': '.$val->{message};
+    }
+
     # array
     if ($val->isa('JE::Object::Array') || ($val->isa('JE::Object') && $val->is_array)
         || ($val->can('class') && $val->class eq 'Array')) {
-        return '(used)' if ref $val && $used{$val->id};
+        return "(used value)" if ref $val && $used{$val->id};
         my @str;
         foreach my $elem (@$val) {
             my $str = jsify($elem);
@@ -54,14 +64,9 @@ sub jsify {
         return '"' . $val . '"';
     }
 
-    # Error
-    if ($val->isa('JE::Object::Error')) {
-        return $val->name.': '.$val->{message};
-    }
-
     # Object
     if ($val->isa('JE::Object') || $val->typeof eq 'object') {
-        return '(used)' if ref $val && $used{$val->id};
+        return "(used value)" if ref $val && $used{$val->id};
         my @str;
         foreach my $key (keys %$val) {
             my $str = $key.': '.(jsify($val->{$key}));
