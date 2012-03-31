@@ -27,6 +27,19 @@ sub new {
         readonly  => 1
     });
 
+    # exit()
+    $self->prop({
+        name  => 'exit',
+        value => JE::Object::Function->new({
+            scope    => $global,
+            name     => 'exit',
+            argnames => [qw/code/],
+            no_proto => 1,
+            function_args => ['args'],
+            function => sub { exit(shift || 0) },
+        })
+    });
+
     $self
 }
 
