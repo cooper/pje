@@ -30,7 +30,7 @@ sub new {
 
     $self->prop({
         name      => 'baseVersion',
-        value     => JE::String->new($global, $JE::VERSION),
+        value     => JE::String->new($global, $JE::JE_VERSION),
         dontdel   => 1,
         readonly  => 1
     });
