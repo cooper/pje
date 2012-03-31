@@ -64,6 +64,11 @@ sub jsify {
         return '"' . $val . '"';
     }
 
+    # function
+    if ($val->isa('JE::Object::Function') || $val->typeof eq 'function') {
+        return (split "\n", $val)[0].' }';
+    }
+
     # Object
     if ($val->isa('JE::Object') || $val->typeof eq 'object') {
         return "(used value)" if ref $val && $used{$val->id};

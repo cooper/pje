@@ -9,7 +9,7 @@ use 5.010;
 use JE;
 use IO::Dir;
 
-our $VERSION = 1.0;
+our $VERSION = '1.0';
 
 # search directories
 our @J_INC = (
@@ -18,7 +18,7 @@ our @J_INC = (
     "$main::dir{lib}/extensions"    # installed module directory
 );
 
-our %MODULES;
+our (%MODULES, %LOADED);
 
 sub new {
     my ($class, %opts) = @_;
@@ -27,6 +27,7 @@ sub new {
     $self->prop({
         name => $_,
         autoload => "do '$MODULES{$_}' or return;
+                    \$LOADED{$_} = 1;
                     if (M::$_\->can('_new_constructor')) {
                         return M::$_\::_new_constructor(\$global)
                     }
