@@ -15,4 +15,4 @@ BEGIN {
     unshift @INC, $dir{lib};
 }
 
-use JE;
+use P;

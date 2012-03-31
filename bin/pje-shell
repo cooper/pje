@@ -19,9 +19,9 @@ BEGIN {
 }
 
 use Scalar::Util 'blessed';
-use JE;
+use P;
 
-my $j = JE->new;
+my $j = P->new;
 
 while (1) {
     my $res;

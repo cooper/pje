@@ -5,8 +5,8 @@ ARGS=$@
 
 case "${ARGS[0]}" in
     '')
-        perl $DIR/pje-shell.pl $DIR
+        perl $DIR/pje-shell $DIR
         ;;
     *)
-        perl $DIR/pje-interpreter.pl $DIR ${ARGS[0]}
+        perl $DIR/pje-interpreter $DIR ${ARGS[0]}
 esac
