@@ -1,3 +1,4 @@
+# Copyright (c) 2012, Mitchell Cooper
 package M::PJE;
 
 our $VERSION = '1.0';

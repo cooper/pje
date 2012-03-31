@@ -45,6 +45,16 @@ sub jsify {
         return $val->name.': '.$val->{message};
     }
 
+    # number
+    if ($val->isa('JE::Object::Number') || $val->typeof eq 'number') {
+        return "$val";
+    }
+
+    # null
+    if ($val->isa('JE::Null')) {
+        return 'null';
+    }
+
     # array
     if ($val->isa('JE::Object::Array') || ($val->isa('JE::Object') && $val->is_array)
         || ($val->can('class') && $val->class eq 'Array')) {
