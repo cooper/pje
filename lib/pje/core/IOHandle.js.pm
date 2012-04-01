@@ -1,7 +1,7 @@
 # Copyright (c) 2012, Mitchell Cooper
 package M::IOHandle;
 
-our $VERSION = '1.1';
+our $VERSION = '1.2';
 
 use strict;
 use warnings;
@@ -80,6 +80,21 @@ sub _new_constructor {
 		dontenum => 1
 	});
 
+    # sysread()
+	$proto->prop({
+		name  => 'sysread',
+		value => JE::Object::Function->new({
+			scope    => $global,
+			name     => 'sysread',
+			length   => 0,
+			no_proto => 1,
+            argnames => ['length', 'offset'],
+			function_args => ['this', 'args'],
+			function => \&_sysread
+		}),
+		dontenum => 1
+	});
+
     $global->prototype_for('IOHandle', $proto);
 
     $f
@@ -100,6 +115,12 @@ sub _say {
 sub _read {
     my ($self, $length, $offset) = @_;
     $$self->{handle}->read(my $data, $length, $offset);
+    $data
+}
+
+sub _sysread {
+    my ($self, $length, $offset) = @_;
+    $$self->{handle}->sysread(my $data, $length, $offset);
     $data
 }
 
