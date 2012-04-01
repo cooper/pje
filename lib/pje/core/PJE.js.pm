@@ -8,8 +8,6 @@ use warnings;
 
 our @ISA = 'JE::Object';
 
-require JE::Object;
-
 sub new {
     my ($class, $global) = @_;
     my $self = $class->SUPER::new($global);
