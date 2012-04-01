@@ -7,9 +7,11 @@ use strict;
 use warnings;
 use base 'JE::Object';
 
+use Scalar::Util 'reftype';
+
 sub new {
     my ($class, $global, $handle) = @_;
-    return if !ref $handle || ref $handle ne 'GLOB';
+    return if !ref $handle || reftype $handle ne 'GLOB';
     my $self = $class->SUPER::new($global, { prototype => $global->prototype_for('IOHandle') });
     $$self->{handle} = $handle;
     $self

@@ -20,13 +20,15 @@ our @J_INC = (
 
 our (%MODULES, %LOADED);
 
+search_directories();
+
 sub new {
     my ($class, %opts) = @_;
     my $self = $class->SUPER::new(%opts);
-    $self->search_directories();
     $self->prop({
         name => $_,
-        autoload => "do '$MODULES{$_}' or return;
+        autoload => "
+                    if (!\$LOADED{$_}) { do '$MODULES{$_}' or return; }
                     \$LOADED{$_} = 1;
                     if (M::$_\->can('_new_constructor')) {
                         return M::$_\::_new_constructor(\$global)
@@ -37,15 +39,20 @@ sub new {
     $self
 }
 
+sub load ($) {
+    my $mod = shift;
+    return if $LOADED{$mod};
+    $LOADED{$mod} = do $MODULES{$mod} or return;
+}
+
 # find autoload modules
 sub search_directories {
-    my $self = shift;
-    search_directory($self, $_) foreach @J_INC;
+    search_directory($_) foreach @J_INC;
 }
 
 # search a directory for modules
 sub search_directory {
-    my ($self, $dir) = @_;
+    my $dir = shift;
     return if $dir eq '..';
     my $curr = $dir;
     my $d = IO::Dir->new($dir);
@@ -53,7 +60,7 @@ sub search_directory {
         next if $next eq '.' || $next eq '..';
         my $last_curr = $curr;
         if (-d "$curr/$next") {
-            search_directory($self, "$curr/$next");
+            search_directory("$curr/$next");
         }
         elsif (-f "$curr/$next") {
             next if $next !~ m/(.+?)\.(pjs|js|jsc|pjsc|js.pm)/;
