@@ -5,8 +5,7 @@ our $VERSION = '1.0';
 
 use strict;
 use warnings;
-
-our @ISA = 'JE::Object';
+use base 'JE::Object';
 
 require JE::Object;
 
