@@ -1,7 +1,7 @@
 # Copyright (c) 2012, Mitchell Cooper
 package M::IOHandle;
 
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 
 use strict;
 use warnings;
@@ -45,7 +45,7 @@ sub _new_constructor {
 			no_proto => 1,
             argnames => ['data'],
 			function_args => ['this', 'args'],
-			function => \&_print,
+			function => \&_print
 		}),
 		dontenum => 1
 	});
@@ -60,7 +60,22 @@ sub _new_constructor {
 			no_proto => 1,
             argnames => ['data'],
 			function_args => ['this', 'args'],
-			function => \&_say,
+			function => \&_say
+		}),
+		dontenum => 1
+	});
+
+    # read()
+	$proto->prop({
+		name  => 'read',
+		value => JE::Object::Function->new({
+			scope    => $global,
+			name     => 'read',
+			length   => 0,
+			no_proto => 1,
+            argnames => ['length', 'offset'],
+			function_args => ['this', 'args'],
+			function => \&_read
 		}),
 		dontenum => 1
 	});
@@ -80,6 +95,12 @@ sub _say {
     my ($self, $data) = @_;
     return $self->global->true if $$self->{handle}->say($data);
     $self->global->true
+}
+
+sub _read {
+    my ($self, $length, $offset) = @_;
+    $$self->{handle}->read(my $data, $length, $offset);
+    $data
 }
 
 sub class { 'IOHandle' }
