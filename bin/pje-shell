@@ -82,13 +82,13 @@ sub jsify {
     # Object
     if ($val->isa('JE::Object') || $val->typeof eq 'object') {
         return "(used value)" if ref $val && $used{$val->id};
+        $used{$val->id} = 1 if ref $val;
         my @str;
         foreach my $key (keys %$val) {
             my $str = $key.': '.(jsify($val->{$key}));
             $str =~ s/\n/\n    /g;
             push @str, $str;
         }
-        $used{$val->id} = 1 if ref $val;
         return "{\n    ".join(",\n    ", @str)."\n}";
     }
 

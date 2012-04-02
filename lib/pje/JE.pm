@@ -263,7 +263,7 @@ sub undefined { $${+shift}{u}         }
 sub true      { $${+shift}{t}         }
 sub false     { $${+shift}{f}         }
 sub null      { $${+shift}{n}         }
-sub class     { 'JavaScriptContext'   }
+sub class     { my $self = shift; $$self->{class} ? $$self->{class} : 'JavaScriptContext' }
 
 sub _add_constructors {
     my $self = shift;
