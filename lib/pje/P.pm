@@ -49,9 +49,9 @@ sub load_js {
         $$j->{class} = $mod;
         open my $fh, $MODULES{$mod};
         my @lines = <$fh>;
-        $j->eval(join "\n", @lines);
+        my $res   = $j->eval(join "\n", @lines);
         $LOADED{$mod} = 1;
-        return create_js_package($global, $mod, $j);
+        return $j->{_new} ? create_js_package($global, $mod, $j) : $res;
     }        
 }
 
