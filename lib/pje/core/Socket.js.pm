@@ -6,14 +6,15 @@ use warnings;
 
 our $VERSION = '1.0';
 our @ISA     = 'M::IOHandle';
-P::load('IOHandle');
+P::load_now('IOHandle');
 
 use IO::Socket::IP;
 
 sub new {
     my ($class, $global, $opts) = @_;
-    $global->{IOHandle} or return; # tells JE to load IOHandle module
-    return if !ref $opts || (ref $opts ne 'HASH' && !UNIVERSAL::can($opts, 'typeof'));
+    $global->{IOHandle} or return JE::Object::Error->new($global, 'Socket could not find IOHandle');
+    return JE::Object::Error::TypeError->new($global, 'Socket expected object of options')
+      if !ref $opts || (ref $opts ne 'HASH' && !UNIVERSAL::can($opts, 'typeof'));
     $opts = $opts->value if UNIVERSAL::can($opts, 'typeof');
     my %opts = %$opts;
 

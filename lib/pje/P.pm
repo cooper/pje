@@ -136,7 +136,7 @@ sub search_directory {
             search_directory("$curr/$next");
         }
         elsif (-f "$curr/$next") {
-            next if $next !~ m/(.+?)\.(js.pm|js)/;
+            next if $next !~ m/(.+?)\.(js.pm|js)$/;
             $MODULES{$1} = "$curr/$next" unless $MODULES{$1};
         }
         $curr = $last_curr;
